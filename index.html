@@ -1,81 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="https://raw.githubusercontent.com/typescriptlang/Rocket-Spark/refs/heads/main/bootstrap.css" />
-  <style>
-    body {
-      background: #1f1f1f;
-      color: white;
-      padding: 2rem;
-      font-family: Arial, sans-serif;
-    }
-    input, button {
-      margin: 5px 0;
-    }
-    img {
-      max-width: 100%;
-      margin-top: 10px;
-      border: 1px solid #444;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="stylesheet" href="https://raw.githubusercontent.com/typescriptlang/Rocket-Spark/refs/heads/main/bootstrap.css" />
+
+<style>
+
+  body {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+  }
+  #preview img {
+    max-width: 100%;
+    border: 1px solid #ccc;
+  }
+  #error {
+    color: red;
+    margin-top: 10px;
+  }
+</style>
 </head>
 <body>
-  <div class="container text-center">
-    <h1 class="mb-4">Classic Clothing Downloader</h1>
 
-    <input type="text" id="assetId" class="form-control" placeholder="Enter Classic Shirt, Pants, or T-Shirt ID">
-    <button onclick="loadClothing()" class="btn btn-primary w-100">Get Preview</button>
+<h2>Classic Roblox Clothing Preview</h2>
+<p>Enter a Roblox Classic Shirt, Pants, or T-Shirt Asset ID:</p>
+<input type="text" id="assetId" placeholder="Enter Asset ID" />
+<button id="loadBtn">Load Preview</button>
 
-    <div id="preview" class="mt-4"></div>
-  </div>
+<div id="preview"></div>
+<div id="error"></div>
 
-  <script>
-    async function loadClothing() {
-      const id = document.getElementById("assetId").value.trim();
-      const preview = document.getElementById("preview");
-      preview.innerHTML = "Loading preview...";
-
-      if (!id || isNaN(id)) {
-        preview.innerHTML = `<p class="text-danger">Please enter a valid numeric asset ID.</p>`;
-        return;
-      }
-
-      // Step 1: Check if asset exists & is clothing
-      const assetInfoURL = `https://api.roblox.com/marketplace/productinfo?assetId=${id}`;
-
-      try {
-        const assetRes = await fetch(assetInfoURL);
-        if (!assetRes.ok) throw new Error("Asset not found");
-
-        const asset = await assetRes.json();
-        const allowedTypes = ["Shirt", "Pants", "T-Shirt"];
-
-        if (!allowedTypes.includes(asset.AssetTypeName)) {
-          preview.innerHTML = `<p class="text-warning">This asset is a "${asset.AssetTypeName}" — only classic clothing (Shirt, Pants, T-Shirt) is supported.</p>`;
-          return;
-        }
-
-        // Step 2: Get Thumbnail
-        const thumbURL = `https://thumbnails.roblox.com/v1/assets?assetIds=${id}&size=420x420&format=Png&isCircular=false`;
-        const thumbRes = await fetch(thumbURL);
-        const thumbData = await thumbRes.json();
-
-        const imageUrl = thumbData.data?.[0]?.imageUrl;
-        if (!imageUrl) throw new Error("Thumbnail not available");
-
-        preview.innerHTML = `
-          <p><strong>Type:</strong> ${asset.AssetTypeName}</p>
-          <img src="${imageUrl}" alt="Clothing Preview">
-          <br>
-          <a href="${imageUrl}" download="clothing_${id}.png" class="btn btn-success mt-2">Download Image</a>
-        `;
-      } catch (e) {
-        preview.innerHTML = `<p class="text-danger">Error: ${e.message}. Check the asset ID or ensure it’s public.</p>`;
-        console.error(e);
-      }
-    }
-  </script>
+<script src="preview.js"></script>
 </body>
 </html>
